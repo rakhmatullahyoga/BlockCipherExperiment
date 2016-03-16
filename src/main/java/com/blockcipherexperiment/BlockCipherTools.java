@@ -10,13 +10,13 @@ package com.blockcipherexperiment;
  * @author Rakhmatullah Yoga S
  */
 public class BlockCipherTools {
-    private String key;
+    private String externalKey;
     
-    public void setKey(String key) {
-        this.key = key;
+    public void setExternalKey(String key) {
+        externalKey = key;
     }
     public String getKey() {
-        return this.key;
+        return externalKey;
     }
     
 }
