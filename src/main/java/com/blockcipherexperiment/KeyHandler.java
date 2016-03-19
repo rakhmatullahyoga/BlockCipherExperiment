@@ -15,6 +15,7 @@ public class KeyHandler {
     public void setExternalKey(String key) {
         externalKey = key;
     }
+    
     public String getKey() {
         return externalKey;
     }
@@ -23,4 +24,13 @@ public class KeyHandler {
         return key.substring(key.length()/2, key.length())+key.substring(0, key.length()/2);
     }
     
+    /**
+     * Get Internal key on specified level of Feistel network
+     * @param level
+     * @return 
+     */
+    public String getInternalKey(int level) {
+        String internalKey = null;
+        return internalKey;
+    }
 }
