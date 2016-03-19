@@ -9,14 +9,6 @@ package com.blockcipherexperiment;
  *
  * @author Rakhmatullah Yoga S
  */
-public class BlockCipherTools {
-    private String externalKey;
-    
-    public void setExternalKey(String key) {
-        externalKey = key;
-    }
-    public String getKey() {
-        return externalKey;
-    }
+public class ModeSelection {
     
 }
