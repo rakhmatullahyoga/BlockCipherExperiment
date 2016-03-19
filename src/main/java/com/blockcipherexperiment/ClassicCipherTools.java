@@ -9,7 +9,7 @@ package com.blockcipherexperiment;
  
  * @author Rakhmatullah Yoga S
  */
-public class CipherTools {
+public class ClassicCipherTools {
     
     static String encryptVigenereStandard(String plain, String key) {
         int skip = 0;
