@@ -14,6 +14,13 @@ import com.blockcipherexperiment.Tools;
  */
 public class Test {
     public static void main(String[] args) {
+        
+        
+        
+    }
+    
+    private void testBlockChiper()
+    {
         BlockCipherAlgorithm alg = new BlockCipherAlgorithm();
         alg.setPlain(Tools.stringToBytes("abcdefghijklmnop"));
         alg.feistel();
@@ -21,5 +28,12 @@ public class Test {
         BlockCipherAlgorithm alg2 = new BlockCipherAlgorithm();
         alg2.setPlain(alg.getCipher());
         alg2.feistel();
+    }
+    
+    private void testBitShift()
+    {
+        byte [] hasil = Tools.shiftLeft("ab".getBytes(), 7);
+        Tools.printArray(Tools.convertToBoolArray(("ab".getBytes())));
+        Tools.printArray(Tools.convertToBoolArray(hasil));
     }
 }

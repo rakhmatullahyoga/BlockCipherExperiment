@@ -17,6 +17,36 @@ import java.util.Random;
  */
 public class Tools {
     
+    /**
+     * Melakukan bit shift terhadap array of byte
+     * @param input array of byte yang akan di shift
+     * @param count banyaknya jumlah shift yang dilakukan
+     * @return 
+     */
+    public static byte[] shiftLeft(byte [] input, int count){
+        boolean [] inputbit = Tools.convertToBoolArray(input);
+        boolean [] left = new boolean[count];
+        
+        // simpan bit kiri yang akan dipindahkan ke paling belakang
+        System.arraycopy(inputbit, 0, left, 0, count);
+        
+        // geser bit ke kiri sebanyak count
+        int idx = 0;
+        for(int i = count; i < inputbit.length; i++)
+        {
+            inputbit[idx] = inputbit[i];
+            idx++;
+        }
+        System.arraycopy(left, 0, inputbit, inputbit.length - count, left.length);
+        return Tools.convertToByte(inputbit);
+    }
+    /**
+     * Mendapatkan value random dari seed yang berupa string tertentu
+     * @param strSeed
+     * @param min
+     * @param max
+     * @return 
+     */
     public static int[] getShuffledInts(String strSeed, int min, int max){
         // bentuk seed untuk random
         long seed = 0;
