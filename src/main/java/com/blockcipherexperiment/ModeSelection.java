@@ -5,10 +5,7 @@
  */
 package com.blockcipherexperiment;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -23,8 +20,8 @@ public class ModeSelection {
         return plain;
     }
 
-    public void setPlain(String plain) {
-        this.plain = plain.getBytes();
+    public void setPlain(byte[] plain) {
+        this.plain = plain;
     }
 
     public String getKey() {
@@ -41,8 +38,8 @@ public class ModeSelection {
         return cipher;
     }
 
-    public void setCipher(String cipher) {
-        this.cipher = cipher.getBytes();
+    public void setCipher(byte[] cipher) {
+        this.cipher = cipher;
     }
     
     public byte[] getBlock(byte[] data, int blockNum) {
