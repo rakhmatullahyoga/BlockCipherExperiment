@@ -93,12 +93,13 @@ public class BlockCipherAlgorithm {
             if(encrypt)
             {
                 RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(i));
+                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(i), RightTemp);
             }
             else
             {
                 RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(7 - i));
+                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(7 - i), RightTemp);
             }
-            RightTemp = Tools.getShuffled(this.key, RightTemp);
             for(int idxbyte = 0; idxbyte < Right.length; idxbyte++)
             {
                 byte temp = (byte) (LeftTemp[idxbyte] ^ RightTemp[idxbyte]);
