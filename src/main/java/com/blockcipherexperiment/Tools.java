@@ -201,8 +201,7 @@ public class Tools {
         return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
     }
     
-    public static String bytesToString(byte [] bytes)
-    {
+    public static String bytesToString(byte [] bytes) {
         return new String(bytes);
     }
     

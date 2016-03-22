@@ -15,16 +15,16 @@ import java.util.logging.Logger;
  * @author Rakhmatullah Yoga S
  */
 public class ModeSelection {
-    private String plain;
+    private byte[] plain;
     private String key;
-    private String cipher;
+    private byte[] cipher;
 
-    public String getPlain() {
+    public byte[] getPlain() {
         return plain;
     }
 
     public void setPlain(String plain) {
-        this.plain = plain;
+        this.plain = plain.getBytes();
     }
 
     public String getKey() {
@@ -37,48 +37,46 @@ public class ModeSelection {
         this.key = key;
     }
 
-    public String getCipher() {
+    public byte[] getCipher() {
         return cipher;
     }
 
     public void setCipher(String cipher) {
-        this.cipher = cipher;
+        this.cipher = cipher.getBytes();
+    }
+    
+    public byte[] getBlock(byte[] data, int blockNum) {
+        byte[] block = new byte[16];
+        for(int i=0; i<block.length; i++) {
+            block[i] = data[i+blockNum*16];
+        }
+        return block;
     }
     
     public void encryptECB() {
-        try {
-            String[] plainBlocks = plain.split("(?<=\\G.{16})");
-            byte[] encrypted = new byte[plain.length()];
-            for(int i=0; i<plainBlocks.length; i++) {
-                BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-                algo.setPlain(plainBlocks[i].getBytes());
-                algo.setKey(key);
-                //Encryption (algo.encrypt())
-                byte[] enc = algo.getCipher();
-                System.arraycopy(enc, 0, encrypted, i*16, enc.length);
-            }
-            cipher = new String(encrypted,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        byte[] encrypted = new byte[plain.length];
+        for(int i=0; i<plain.length/16; i++) {
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            algo.setPlain(getBlock(plain, i));
+            algo.setKey(key);
+            algo.encrypt();
+            byte[] enc = algo.getCipher();
+            System.arraycopy(enc, 0, encrypted, i*16, enc.length);
         }
+        cipher = encrypted;
     }
     
     public void decryptECB() {
-        try {
-            String[] cipherBlocks = cipher.split("(?<=\\G.{16})");
-            byte[] decrypted = new byte[cipher.length()];
-            for(int i=0; i<cipherBlocks.length; i++) {
-                BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-                algo.setCipher(cipherBlocks[i].getBytes());
-                algo.setKey(key);
-                //Encryption (algo.decrypt())
-                byte[] dec = algo.getPlain();
-                System.arraycopy(dec, 0, decrypted, i*16, dec.length);
-            }
-            plain = new String(decrypted,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        byte[] decrypted = new byte[cipher.length];
+        for(int i=0; i<cipher.length/16; i++) {
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            algo.setCipher(getBlock(cipher, i));
+            algo.setKey(key);
+            algo.decrypt();
+            byte[] dec = algo.getPlain();
+            System.arraycopy(dec, 0, decrypted, i*16, dec.length);
         }
+        plain = decrypted;
     }
     
     public byte[] XOR(byte[] plainCurrent, byte[] prevCipher) {
@@ -106,54 +104,44 @@ public class ModeSelection {
     }
     
     public void encryptCBC() {
-        try {
-            String[] plainBlocks = plain.split("(?<=\\G.{16})");
-            byte[] encrypted = new byte[plain.length()];
-            byte[] enc = null;
-            for(int i=0; i<plainBlocks.length; i++) {
-                BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-                byte[] inputPlain;
-                if(i==0) {
-                    inputPlain = XOR(plainBlocks[i].getBytes(), generateInitVector(getSeedFromKey(key)));
-                }
-                else {
-                    inputPlain = XOR(plainBlocks[i].getBytes(), enc);
-                }
-                algo.setPlain(inputPlain);
-                algo.setKey(key);
-                //Encryption (algo.encrypt())
-                enc = algo.getCipher();
-                System.arraycopy(enc, 0, encrypted, i*16, enc.length);
+        byte[] encrypted = new byte[plain.length];
+        byte[] enc = null;
+        for(int i=0; i<plain.length/16; i++) {
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            byte[] inputPlain;
+            if(i==0) {
+                inputPlain = XOR(getBlock(plain, i), generateInitVector(getSeedFromKey(key)));
             }
-            cipher = new String(encrypted,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+            else {
+                inputPlain = XOR(getBlock(plain, i), enc);
+            }
+            algo.setPlain(inputPlain);
+            algo.setKey(key);
+            algo.encrypt();
+            enc = algo.getCipher();
+            System.arraycopy(enc, 0, encrypted, i*16, enc.length);
         }
+        cipher = encrypted;
     }
     
     public void decryptCBC() {
-        try {
-            String[] cipherBlocks = cipher.split("(?<=\\G.{16})");
-            byte[] decrypted = new byte[cipher.length()];
-            byte[] dec = null;
-            for(int i=0; i<cipherBlocks.length; i++) {
-                BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-                algo.setCipher(cipherBlocks[i].getBytes());
-                algo.setKey(key);
-                //Encryption (algo.encrypt())
-                dec = algo.getPlain();
-                if(i==0) {
-                    dec = XOR(dec, generateInitVector(getSeedFromKey(key)));
-                }
-                else {
-                    dec = XOR(cipherBlocks[i-1].getBytes(), dec);
-                }
-                System.arraycopy(dec, 0, decrypted, i*16, dec.length);
+        byte[] decrypted = new byte[cipher.length];
+        byte[] dec = null;
+        for(int i=0; i<cipher.length/16; i++) {
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            algo.setCipher(getBlock(cipher, i));
+            algo.setKey(key);
+            algo.decrypt();
+            dec = algo.getPlain();
+            if(i==0) {
+                dec = XOR(dec, generateInitVector(getSeedFromKey(key)));
             }
-            plain = new String(decrypted,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+            else {
+                dec = XOR(getBlock(cipher, i-1), dec);
+            }
+            System.arraycopy(dec, 0, decrypted, i*16, dec.length);
         }
+        plain = decrypted;
     }
     
     public byte[] shiftLeftBytes(byte[] input, byte LSB) {
@@ -168,40 +156,32 @@ public class ModeSelection {
     }
     
     public void encryptCFB() {
-        try {
-            byte[] plainBytes = plain.getBytes();
-            byte[] cipherBytes = new byte[plainBytes.length];
-            byte[] inputEnc = generateInitVector(getSeedFromKey(key));
-            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-            algo.setKey(key);
-            for(int i=0; i<plainBytes.length; i++) {
-                algo.setPlain(inputEnc);
-                //Encryption (algo.encrypt());
-                cipherBytes[i] = (byte) (((int)plainBytes[i]^(int)algo.getCipher()[0])&0xff);
-                inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
-            }
-            cipher = new String(cipherBytes,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        byte[] plainBytes = plain;
+        byte[] cipherBytes = new byte[plainBytes.length];
+        byte[] inputEnc = generateInitVector(getSeedFromKey(key));
+        BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+        algo.setKey(key);
+        for(int i=0; i<plainBytes.length; i++) {
+            algo.setPlain(inputEnc);
+            algo.encrypt();
+            cipherBytes[i] = (byte) (((int)plainBytes[i]^(int)algo.getCipher()[0])&0xff);
+            inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
         }
+        cipher = cipherBytes;
     }
     
     public void decryptCFB() {
-        try {
-            byte[] cipherBytes = cipher.getBytes();
-            byte[] plainBytes = new byte[cipherBytes.length];
-            byte[] inputEnc = generateInitVector(getSeedFromKey(key));
-            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
-            algo.setKey(key);
-            for(int i=0; i<plainBytes.length; i++) {
-                algo.setPlain(inputEnc);
-                //Encryption (algo.encrypt());
-                plainBytes[i] = (byte) (((int)cipherBytes[i]^(int)algo.getCipher()[0])&0xff);
-                inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
-            }
-            plain = new String(plainBytes,"ISO-8859-1");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        byte[] cipherBytes = cipher;
+        byte[] plainBytes = new byte[cipherBytes.length];
+        byte[] inputEnc = generateInitVector(getSeedFromKey(key));
+        BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+        algo.setKey(key);
+        for(int i=0; i<plainBytes.length; i++) {
+            algo.setPlain(inputEnc);
+            algo.encrypt();
+            plainBytes[i] = (byte) (((int)cipherBytes[i]^(int)algo.getCipher()[0])&0xff);
+            inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
         }
+        plain = plainBytes;
     }
 }

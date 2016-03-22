@@ -37,15 +37,9 @@ public class BlockCipherAlgorithm {
      */
     public BlockCipherAlgorithm(){
         keyhandler = new KeyHandler();
-        keyhandler.setExternalKey(this.key);
     }
     
     public byte[] getPlain() {
-        try {
-            this.feistel(false);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(BlockCipherAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return this.result;
     }
 
@@ -57,16 +51,12 @@ public class BlockCipherAlgorithm {
         return this.key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setKey(String _key) {
+        this.key = _key;
+        keyhandler.setExternalKey(this.key);
     }
 
     public byte[] getCipher() {
-        try {
-            this.feistel(true);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(BlockCipherAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return this.result;
     }
 
@@ -78,7 +68,7 @@ public class BlockCipherAlgorithm {
      * feistel untuk melakukan feistel setiap 16 byte
      * @param encrypt True jika akan encrypt, false jika decrypt
      */
-    public void feistel(boolean encrypt) throws UnsupportedEncodingException
+    private void feistel(boolean encrypt) throws UnsupportedEncodingException
     {
         // inisialisasi right left
         byte [] Left = new byte[init.length / 2];
@@ -120,6 +110,22 @@ public class BlockCipherAlgorithm {
         this.result = new byte[this.init.length];
         System.arraycopy(Right, 0, this.result, 0, Right.length);
         System.arraycopy(Left, 0, this.result, Right.length, Right.length);
+    }
+    
+    public void decrypt() {
+        try {
+            this.feistel(false);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(BlockCipherAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void encrypt() {
+        try {
+            this.feistel(true);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(BlockCipherAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

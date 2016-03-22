@@ -29,10 +29,16 @@ public class Test {
     }
     private static void testBlockChiper() throws UnsupportedEncodingException
     {
-        BlockCipherAlgorithm alg = new BlockCipherAlgorithm("a", "abcdefghijklmnop".getBytes());
+        BlockCipherAlgorithm alg = new BlockCipherAlgorithm();
+        alg.setKey("ABCDEFGHIJKLMNOP");
+        alg.setPlain("ABCDEFGHIJKLMNOP".getBytes());
+        alg.encrypt();
         System.err.println(Tools.bytesToString(alg.getCipher()));
         
-        BlockCipherAlgorithm alg2 = new BlockCipherAlgorithm("a", alg.getCipher());
+        BlockCipherAlgorithm alg2 = new BlockCipherAlgorithm("ABCDEFGHIJKLMNOP", alg.getCipher());
+        alg2.setKey("ABCDEFGHIJKLMNOP");
+        alg2.setCipher(alg.getCipher());
+        alg2.decrypt();
         System.err.println(Tools.bytesToString(alg2.getPlain()));
     }
     
