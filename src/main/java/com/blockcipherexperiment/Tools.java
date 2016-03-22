@@ -13,6 +13,18 @@ import java.util.Random;
 
 public class Tools {
     
+    public static byte [] getShuffled(String strSeed, byte [] data)
+    {
+        // bentuk seed untuk random
+        long seed = 0;
+        for (int i = 0; i < strSeed.length(); i++)
+            seed += (long)strSeed.charAt(i);
+        
+        List <Boolean> arrToShuffle = Tools.byteToBool(data);
+        Collections.shuffle(arrToShuffle, new Random(seed));
+        return Tools.boolToByte(arrToShuffle);
+    }
+    
     /**
      * Melakukan bit shift terhadap array of byte
      * @param input array of byte yang akan di shift
@@ -61,15 +73,6 @@ public class Tools {
         return Tools.convertToByte(inputbit);
     }
     
-//    public static int[] getShuffledInts(String strSeed, int min, int max, int jumlah){
-//        // bentuk seed untuk random
-//        long seed = 0;
-//        for (int i = 0; i < strSeed.length(); i++)
-//            seed += (long)strSeed.charAt(i);
-//        
-//        
-//    }
-    
     /**
      * Mendapatkan value random dari seed yang berupa string tertentu
      * @param strSeed
@@ -103,6 +106,30 @@ public class Tools {
     // Konversi Boolean >< Byte
     public static boolean[] convertToBoolArray(byte[] bytes) {
         return Tools.convert(bytes, bytes.length * 8);
+    }
+    
+    public static List<Boolean> byteToBool(byte [] key) {
+        List<Boolean> bList = new ArrayList<>();
+        for(int x=0; x<key.length; x++) {
+            boolean bit;
+            byte c= key[x];
+            for(int i=0; i<8; i++) {
+                bit = (c & (1 << 7-i))!=0;
+                bList.add(bit);
+            }
+        }
+        return bList;
+    }
+    
+    public static byte [] boolToByte(List <Boolean> bool)
+    {
+        byte[] data = new byte[(int)bool.size()/8];
+        for(int i=0; i<data.length; i++) {
+            data[i] = 0;
+            for(int j=0; j<8; j++)
+                data[i] += ((bool.get(i*8+j)? 1:0) << (7-j));
+        }
+        return data;
     }
     
     public static byte[] convertToByte(boolean[] booleanOfData) {

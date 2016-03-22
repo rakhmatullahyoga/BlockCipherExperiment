@@ -5,6 +5,9 @@
  */
 package com.blockcipherexperiment;
 
+import java.util.Collections;
+import java.util.Random;
+
 /**
  *
  * @author Rakhmatullah Yoga S
@@ -12,8 +15,22 @@ package com.blockcipherexperiment;
  */
 public class BlockCipherAlgorithm {
     private byte[] init;
-    private String key;
+    private String key; // key external dari mode selection
     private byte[] result;
+    KeyHandler keyhandler;
+    
+    /**
+     * Menginisialisasi BlockCipherAlgorithm.
+     * @param _key Key yang digunakan untuk encrypt maupun decrypt
+     * @param _byte Byte [] dari plain maupun chiper, tergantung akan enkripsi atau dekripsi
+     * @param encrypt True jika akan encrypt, false jika decrypt
+     */
+    public BlockCipherAlgorithm(String _key, byte[] _byte){
+        this.init = _byte;
+        this.key = _key;
+        keyhandler = new KeyHandler();
+        keyhandler.setExternalKey(this.key);
+    }
     
     public byte[] getPlain() {
         return init;
@@ -39,6 +56,9 @@ public class BlockCipherAlgorithm {
         this.result = cipher;
     }
     
+    /**
+     * feistel untuk melakukan feistel setiap 16 byte
+     */
     public void feistel()
     {
         // inisialisasi right left
@@ -47,8 +67,8 @@ public class BlockCipherAlgorithm {
         System.arraycopy(this.init, 0, Left, 0, init.length / 2);
         System.arraycopy(this.init, init.length / 2 , Right, 0, init.length / 2);
         
-        // Mulai feistel
-        for(int i = 0; i < 8; i++)
+        // Mulai feistel per 16 byte
+        for(int i = 0; i < 2; i++)
         {
             // simpan initial state
             byte [] LeftTemp = new byte[Left.length];
@@ -61,6 +81,7 @@ public class BlockCipherAlgorithm {
             
             // R = L-1  XOR  R-1
             // Tambahkan fungsi F ke sini
+            RightTemp = Tools.getShuffled(this.key, RightTemp);
             for(int idxbyte = 0; idxbyte < Right.length; idxbyte++)
             {
                 byte temp = (byte) (LeftTemp[idxbyte] ^ RightTemp[idxbyte]);
