@@ -75,7 +75,7 @@ public class ModeSelection {
                 byte[] dec = algo.getPlain();
                 System.arraycopy(dec, 0, decrypted, i*16, dec.length);
             }
-            cipher = new String(decrypted,"ISO-8859-1");
+            plain = new String(decrypted,"ISO-8859-1");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -133,8 +133,8 @@ public class ModeSelection {
     
     public void decryptCBC() {
         try {
-            String[] cipherBlocks = plain.split("(?<=\\G.{16})");
-            byte[] decrypted = new byte[plain.length()];
+            String[] cipherBlocks = cipher.split("(?<=\\G.{16})");
+            byte[] decrypted = new byte[cipher.length()];
             byte[] dec = null;
             for(int i=0; i<cipherBlocks.length; i++) {
                 BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
@@ -142,7 +142,6 @@ public class ModeSelection {
                 algo.setKey(key);
                 //Encryption (algo.encrypt())
                 dec = algo.getPlain();
-                byte[] inputCipher;
                 if(i==0) {
                     dec = XOR(dec, generateInitVector(getSeedFromKey(key)));
                 }
@@ -151,7 +150,56 @@ public class ModeSelection {
                 }
                 System.arraycopy(dec, 0, decrypted, i*16, dec.length);
             }
-            cipher = new String(decrypted,"ISO-8859-1");
+            plain = new String(decrypted,"ISO-8859-1");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public byte[] shiftLeftBytes(byte[] input, byte LSB) {
+        byte[] newBytes = new byte[input.length];
+        for(int i=0; i<newBytes.length; i++) {
+            if(i+1==newBytes.length)
+                newBytes[i] = LSB;
+            else
+                newBytes[i] = input[i+1];
+        }
+        return newBytes;
+    }
+    
+    public void encryptCFB() {
+        try {
+            byte[] plainBytes = plain.getBytes();
+            byte[] cipherBytes = new byte[plainBytes.length];
+            byte[] inputEnc = generateInitVector(getSeedFromKey(key));
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            algo.setKey(key);
+            for(int i=0; i<plainBytes.length; i++) {
+                algo.setPlain(inputEnc);
+                //Encryption (algo.encrypt());
+                cipherBytes[i] = (byte) (((int)plainBytes[i]^(int)algo.getCipher()[0])&0xff);
+                inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
+            }
+            cipher = new String(cipherBytes,"ISO-8859-1");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void decryptCFB() {
+        try {
+            byte[] cipherBytes = cipher.getBytes();
+            byte[] plainBytes = new byte[cipherBytes.length];
+            byte[] inputEnc = generateInitVector(getSeedFromKey(key));
+            BlockCipherAlgorithm algo = new BlockCipherAlgorithm();
+            algo.setKey(key);
+            for(int i=0; i<plainBytes.length; i++) {
+                algo.setPlain(inputEnc);
+                //Encryption (algo.encrypt());
+                plainBytes[i] = (byte) (((int)cipherBytes[i]^(int)algo.getCipher()[0])&0xff);
+                inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
+            }
+            plain = new String(plainBytes,"ISO-8859-1");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ModeSelection.class.getName()).log(Level.SEVERE, null, ex);
         }
