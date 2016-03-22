@@ -7,32 +7,45 @@ package test.blockcipherexperiment;
 
 import com.blockcipherexperiment.BlockCipherAlgorithm;
 import com.blockcipherexperiment.Tools;
+import java.io.UnsupportedEncodingException;
 
 /**
  *
  * @author akhfa
  */
 public class Test {
-    public static void main(String[] args) {
-        
-        
-        
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        Test.testBlockChiper();
     }
     
-    private void testBlockChiper()
+    private static void testRandom()
     {
-        BlockCipherAlgorithm alg = new BlockCipherAlgorithm();
-        alg.setPlain(Tools.stringToBytes("abcdefghijklmnop"));
-        alg.feistel();
+        int [] array = Tools.getShuffledInts("a", 0, 5);
         
-        BlockCipherAlgorithm alg2 = new BlockCipherAlgorithm();
-        alg2.setPlain(alg.getCipher());
-        alg2.feistel();
+        for(int i : array)
+        {
+            System.err.println(i);
+        }
+    }
+    private static void testBlockChiper() throws UnsupportedEncodingException
+    {
+        BlockCipherAlgorithm alg = new BlockCipherAlgorithm("a", "abcdefghijklmnop".getBytes());
+        System.err.println(Tools.bytesToString(alg.getCipher()));
+        
+        BlockCipherAlgorithm alg2 = new BlockCipherAlgorithm("a", alg.getCipher());
+        System.err.println(Tools.bytesToString(alg2.getPlain()));
     }
     
-    private void testBitShift()
+    private static void testBitShift()
     {
         byte [] hasil = Tools.shiftLeft("ab".getBytes(), 7);
+        Tools.printArray(Tools.convertToBoolArray(("ab".getBytes())));
+        Tools.printArray(Tools.convertToBoolArray(hasil));
+    }
+    
+    private static void testRightShift()
+    {
+        byte [] hasil = Tools.shiftRight("ab".getBytes(), 7);
         Tools.printArray(Tools.convertToBoolArray(("ab".getBytes())));
         Tools.printArray(Tools.convertToBoolArray(hasil));
     }
