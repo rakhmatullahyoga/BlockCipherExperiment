@@ -17,7 +17,7 @@ public class Main {
         try {
             ModeSelection mode = new ModeSelection();
             mode.setKey("ABCDEFGHIJKLMNOP");
-            mode.setPlain("Crop Circle Theories\n" +
+            mode.setPlain(("Crop Circle Theories\n" +
 "Crop circles are areas of cereal or similar crops that have been systematically flattened to form various geometric patterns. The phenomenon itself only entered the public imagination in its current form after the notable appearances in England in the late 1970s. Various scientific and pseudo-scientific explanations were put forward to explain the phenomenon, which soon spread around the world.\n" +
 "In 1991, more than a decade after the phenomena began, two men, Doug Bower and Dave Chorley, revealed that they had been making crop circles in England since 1978 using planks, rope, hats and wire as their only tools. Many other people around the world are also openly making crop circles. Although the commonly accepted view today is that crop circles are a man-made phenomenon, paranormal explanations, often including UFOs, are still popular.\n" +
 "In paranormal circles the study of the crop circle phenomena is called Cerealogy. Cerealogists commonly refer to these designs as agriglyphs or landscape art.\n" +
@@ -83,7 +83,7 @@ public class Main {
 "Also they say that flattened corn often lies in groomed layers, rather than random crushings. While there have been cases in which believers declared crop circles to be “the real thing”, only to be confronted soon after with the people who created the circle and documented the fraud, the bending issue remains in dispute.\n" +
 "Electronic Equipment\n" +
 "There are numerous reports of electronic and mechanical equipment breaking down in crop circles. Cameras frequently malfunction, and even when they do work, the results may be overexposed, streaked, smeared, or entirely black. Video equipment is also very vulnerable, and often picks up severe interference. Battery draining is quite common, and even fresh power packs can die. Cell phones often fail to operate within a formation but sometimes work perfectly again if taken outside it.\n" +
-"Magnetic compasses frequently behave erratically both inside crop formations and when flying directly over them. Witnesses sometimes report TV, cell phone, smoke alarm and security device interference or malfunctions during nights when a crop circle forms nearby. The night before the appearance of the 1991 Barbury Castle tetrahedron), residents in the nearby village of Broughton experienced a power blackout and many residents reported balls of coloured light flying above the field where the formation later manifested, along with a low rumbling.");
+"Magnetic compasses frequently behave erratically both inside crop formations and when flying directly over them. Witnesses sometimes report TV, cell phone, smoke alarm and security device interference or malfunctions during nights when a crop circle forms nearby. The night before the appearance of the 1991 Barbury Castle tetrahedron), residents in the nearby village of Broughton experienced a power blackout and many residents reported balls of coloured light flying above the field where the formation later manifested, along with a low rumbling.").getBytes());
             mode.encryptCFB();
             System.out.println(Tools.bytesToString(mode.getCipher()));
             System.out.println();
