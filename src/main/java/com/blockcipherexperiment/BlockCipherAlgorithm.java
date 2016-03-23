@@ -81,7 +81,7 @@ public class BlockCipherAlgorithm {
         int [] internalKeyRandomNumber = Tools.getShuffledInts(this.key, 0, 7);
         
         // Mulai feistel per 16 byte
-        for(int i = 0; i < 8; i++)
+        for(int i = 0; i < 16; i++)
         {
             // simpan initial state
             byte [] LeftTemp = new byte[Left.length];
@@ -96,16 +96,16 @@ public class BlockCipherAlgorithm {
             // Tambahkan fungsi F ke sini
             if(encrypt)
             {
-                RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(internalKeyRandomNumber[i]));
-                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(i), RightTemp);
+                RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(internalKeyRandomNumber[(i % 8)]));
+                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(i % 8), RightTemp);
                 // shifting
-                RightTemp = Tools.shiftLeft(RightTemp, shiftRandomNumber[i]);
+                RightTemp = Tools.shiftLeft(RightTemp, shiftRandomNumber[i % 8]);
             }
             else
             {
-                RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(internalKeyRandomNumber[7 - i]));
-                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(7 - i), RightTemp);
-                RightTemp = Tools.shiftLeft(RightTemp, shiftRandomNumber[7 - i]);
+                RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(internalKeyRandomNumber[7 - (i % 8)]));
+                RightTemp = Tools.getShuffled(keyhandler.getInternalKey(7 - (i % 8)), RightTemp);
+                RightTemp = Tools.shiftLeft(RightTemp, shiftRandomNumber[7 - (i % 8)]);
             }
             
             for(int idxbyte = 0; idxbyte < Right.length; idxbyte++)
