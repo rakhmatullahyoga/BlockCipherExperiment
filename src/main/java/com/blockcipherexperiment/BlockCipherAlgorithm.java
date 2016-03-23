@@ -6,6 +6,7 @@
 package com.blockcipherexperiment;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,6 +77,8 @@ public class BlockCipherAlgorithm {
         System.arraycopy(this.init, 0, Left, 0, init.length / 2);
         System.arraycopy(this.init, init.length / 2 , Right, 0, init.length / 2);
         
+        int [] randomNumber = Tools.getShuffledInts(this.key, 7, 14);
+        
         // Mulai feistel per 16 byte
         for(int i = 0; i < 8; i++)
         {
@@ -94,12 +97,16 @@ public class BlockCipherAlgorithm {
             {
                 RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(i));
                 RightTemp = Tools.getShuffled(keyhandler.getInternalKey(i), RightTemp);
+                // shifting
+                RightTemp = Tools.shiftLeft(RightTemp, randomNumber[i]);
             }
             else
             {
                 RightTemp = ClassicCipherTools.encryptByte(RightTemp, keyhandler.getInternalKey(7 - i));
                 RightTemp = Tools.getShuffled(keyhandler.getInternalKey(7 - i), RightTemp);
+                RightTemp = Tools.shiftLeft(RightTemp, randomNumber[7 - i]);
             }
+            
             for(int idxbyte = 0; idxbyte < Right.length; idxbyte++)
             {
                 byte temp = (byte) (LeftTemp[idxbyte] ^ RightTemp[idxbyte]);
