@@ -5,6 +5,7 @@
  */
 package com.blockcipherexperiment;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -180,5 +181,29 @@ public class ModeSelection {
             inputEnc = shiftLeftBytes(inputEnc, cipherBytes[i]);
         }
         plain = plainBytes;
+    }
+    
+    public void showPlainFrequency() {
+        HashMap<Character,Integer> h = new HashMap<>();
+        for(int i=0; i<plain.length; i++){
+            if(h.containsKey((char)plain[i])){
+                h.put((char)plain[i], h.get((char)plain[i]) + 1);
+            } else {
+                h.put((char)plain[i], 1);
+            }
+        }
+        System.out.println(h);
+    }
+    
+    public void showCipherFrequency() {
+        HashMap<Character,Integer> h = new HashMap<>();
+        for(int i=0; i<cipher.length; i++){
+            if(h.containsKey((char)cipher[i])){
+                h.put((char)cipher[i], h.get((char)cipher[i]) + 1);
+            } else {
+                h.put((char)cipher[i], 1);
+            }
+        }
+        System.out.println(h);
     }
 }
